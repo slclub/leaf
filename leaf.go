@@ -2,7 +2,7 @@ package leaf
 
 import (
 	"github.com/slclub/leaf/cluster"
-	"github.com/slclub/leaf/conf"
+	//"github.com/slclub/leaf/conf"
 	"github.com/slclub/leaf/console"
 	"github.com/slclub/leaf/log"
 	"github.com/slclub/leaf/module"
@@ -12,14 +12,14 @@ import (
 
 func Run(mods ...module.Module) {
 	// logger
-	if conf.LogLevel != "" {
-		logger, err := log.New(conf.LogLevel, conf.LogPath, conf.LogFlag)
-		if err != nil {
-			panic(any(err))
-		}
-		log.Export(logger)
-		defer logger.Close()
-	}
+	//if conf.LogLevel != "" {
+	//	logger, err := log.New(conf.LogLevel, conf.LogPath, conf.LogFlag)
+	//	if err != nil {
+	//		panic(any(err))
+	//	}
+	//	log.Export(logger)
+	//	defer logger.Close()
+	//}
 
 	log.Release("Leaf %v starting up", version)
 
