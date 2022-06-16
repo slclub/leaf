@@ -1,11 +1,11 @@
 package leaf
 
 import (
-	"github.com/name5566/leaf/cluster"
-	"github.com/name5566/leaf/conf"
-	"github.com/name5566/leaf/console"
-	"github.com/name5566/leaf/log"
-	"github.com/name5566/leaf/module"
+	"github.com/slclub/leaf/cluster"
+	"github.com/slclub/leaf/conf"
+	"github.com/slclub/leaf/console"
+	"github.com/slclub/leaf/log"
+	"github.com/slclub/leaf/module"
 	"os"
 	"os/signal"
 )
@@ -15,7 +15,7 @@ func Run(mods ...module.Module) {
 	if conf.LogLevel != "" {
 		logger, err := log.New(conf.LogLevel, conf.LogPath, conf.LogFlag)
 		if err != nil {
-			panic(err)
+			panic(any(err))
 		}
 		log.Export(logger)
 		defer logger.Close()

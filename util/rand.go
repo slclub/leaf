@@ -11,7 +11,7 @@ func init() {
 
 func RandGroup(p ...uint32) int {
 	if p == nil {
-		panic("args not found")
+		Panic("args not found")
 	}
 
 	r := make([]uint32, len(p))
@@ -35,7 +35,8 @@ func RandGroup(p ...uint32) int {
 		}
 	}
 
-	panic("bug")
+	Panic("bug")
+	return 0
 }
 
 func RandInterval(b1, b2 int32) int32 {
@@ -89,3 +90,5 @@ func RandIntervalN(b1, b2 int32, n uint32) []int32 {
 
 	return r
 }
+
+var NIL = any(nil)

@@ -2,8 +2,9 @@ package g
 
 import (
 	"container/list"
-	"github.com/name5566/leaf/conf"
-	"github.com/name5566/leaf/log"
+	"github.com/slclub/leaf/conf"
+	"github.com/slclub/leaf/log"
+	"github.com/slclub/leaf/util"
 	"runtime"
 	"sync"
 )
@@ -38,7 +39,7 @@ func (g *Go) Go(f func(), cb func()) {
 	go func() {
 		defer func() {
 			g.ChanCb <- cb
-			if r := recover(); r != nil {
+			if r := recover(); r != util.NIL {
 				if conf.LenStackBuf > 0 {
 					buf := make([]byte, conf.LenStackBuf)
 					l := runtime.Stack(buf, false)
@@ -56,7 +57,7 @@ func (g *Go) Go(f func(), cb func()) {
 func (g *Go) Cb(cb func()) {
 	defer func() {
 		g.pendingGo--
-		if r := recover(); r != nil {
+		if r := recover(); r != util.NIL {
 			if conf.LenStackBuf > 0 {
 				buf := make([]byte, conf.LenStackBuf)
 				l := runtime.Stack(buf, false)
@@ -106,7 +107,7 @@ func (c *LinearContext) Go(f func(), cb func()) {
 
 		defer func() {
 			c.g.ChanCb <- e.cb
-			if r := recover(); r != nil {
+			if r := recover(); r != any(nil) {
 				if conf.LenStackBuf > 0 {
 					buf := make([]byte, conf.LenStackBuf)
 					l := runtime.Stack(buf, false)

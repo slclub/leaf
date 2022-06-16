@@ -1,10 +1,10 @@
 package module
 
 import (
-	"github.com/name5566/leaf/chanrpc"
-	"github.com/name5566/leaf/console"
-	"github.com/name5566/leaf/go"
-	"github.com/name5566/leaf/timer"
+	"github.com/slclub/leaf/chanrpc"
+	"github.com/slclub/leaf/console"
+	"github.com/slclub/leaf/go"
+	"github.com/slclub/leaf/timer"
 	"time"
 )
 
@@ -69,7 +69,7 @@ func (s *Skeleton) Run(closeSig chan bool) {
 
 func (s *Skeleton) AfterFunc(d time.Duration, cb func()) *timer.Timer {
 	if s.TimerDispatcherLen == 0 {
-		panic("invalid TimerDispatcherLen")
+		panic(any("invalid TimerDispatcherLen"))
 	}
 
 	return s.dispatcher.AfterFunc(d, cb)
@@ -77,7 +77,7 @@ func (s *Skeleton) AfterFunc(d time.Duration, cb func()) *timer.Timer {
 
 func (s *Skeleton) CronFunc(cronExpr *timer.CronExpr, cb func()) *timer.Cron {
 	if s.TimerDispatcherLen == 0 {
-		panic("invalid TimerDispatcherLen")
+		panic(any("invalid TimerDispatcherLen"))
 	}
 
 	return s.dispatcher.CronFunc(cronExpr, cb)
@@ -85,7 +85,7 @@ func (s *Skeleton) CronFunc(cronExpr *timer.CronExpr, cb func()) *timer.Cron {
 
 func (s *Skeleton) Go(f func(), cb func()) {
 	if s.GoLen == 0 {
-		panic("invalid GoLen")
+		panic(any("invalid GoLen"))
 	}
 
 	s.g.Go(f, cb)
@@ -93,7 +93,7 @@ func (s *Skeleton) Go(f func(), cb func()) {
 
 func (s *Skeleton) NewLinearContext() *g.LinearContext {
 	if s.GoLen == 0 {
-		panic("invalid GoLen")
+		panic(any("invalid GoLen"))
 	}
 
 	return s.g.NewLinearContext()
@@ -101,7 +101,7 @@ func (s *Skeleton) NewLinearContext() *g.LinearContext {
 
 func (s *Skeleton) AsynCall(server *chanrpc.Server, id interface{}, args ...interface{}) {
 	if s.AsynCallLen == 0 {
-		panic("invalid AsynCallLen")
+		panic(any("invalid AsynCallLen"))
 	}
 
 	s.client.Attach(server)
@@ -110,7 +110,7 @@ func (s *Skeleton) AsynCall(server *chanrpc.Server, id interface{}, args ...inte
 
 func (s *Skeleton) RegisterChanRPC(id interface{}, f interface{}) {
 	if s.ChanRPCServer == nil {
-		panic("invalid ChanRPCServer")
+		panic(any("invalid ChanRPCServer"))
 	}
 
 	s.server.Register(id, f)

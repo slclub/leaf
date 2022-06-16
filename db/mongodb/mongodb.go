@@ -2,7 +2,7 @@ package mongodb
 
 import (
 	"container/heap"
-	"github.com/name5566/leaf/log"
+	"github.com/slclub/leaf/log"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"sync"
@@ -33,12 +33,12 @@ func (h SessionHeap) Swap(i, j int) {
 	h[j].index = j
 }
 
-func (h *SessionHeap) Push(s interface{}) {
+func (h *SessionHeap) Push(s any) {
 	s.(*Session).index = len(*h)
 	*h = append(*h, s.(*Session))
 }
 
-func (h *SessionHeap) Pop() interface{} {
+func (h *SessionHeap) Pop() any {
 	l := len(*h)
 	s := (*h)[l-1]
 	s.index = -1

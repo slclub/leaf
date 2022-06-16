@@ -3,6 +3,8 @@ package log
 import (
 	"errors"
 	"fmt"
+	"github.com/slclub/glog"
+	"github.com/slclub/leaf/util"
 	"log"
 	"os"
 	"path"
@@ -91,12 +93,12 @@ func (logger *Logger) Close() {
 	logger.baseFile = nil
 }
 
-func (logger *Logger) doPrintf(level int, printLevel string, format string, a ...interface{}) {
+func (logger *Logger) doPrintf(level int, printLevel string, format string, a ...any) {
 	if level < logger.level {
 		return
 	}
 	if logger.baseLogger == nil {
-		panic("logger closed")
+		util.Panic("logger closed")
 	}
 
 	format = printLevel + format
@@ -133,19 +135,23 @@ func Export(logger *Logger) {
 }
 
 func Debug(format string, a ...interface{}) {
-	gLogger.doPrintf(debugLevel, printDebugLevel, format, a...)
+	//gLogger.doPrintf(debugLevel, printDebugLevel, format, a...)
+	glog.Debugf(format, a...)
 }
 
 func Release(format string, a ...interface{}) {
-	gLogger.doPrintf(releaseLevel, printReleaseLevel, format, a...)
+	//gLogger.doPrintf(releaseLevel, printReleaseLevel, format, a...)
+	glog.Infof(format, a...)
 }
 
 func Error(format string, a ...interface{}) {
-	gLogger.doPrintf(errorLevel, printErrorLevel, format, a...)
+	//gLogger.doPrintf(errorLevel, printErrorLevel, format, a...)
+	glog.Errorf(format, a...)
 }
 
 func Fatal(format string, a ...interface{}) {
-	gLogger.doPrintf(fatalLevel, printFatalLevel, format, a...)
+	//gLogger.doPrintf(fatalLevel, printFatalLevel, format, a...)
+	glog.Fatalf(format, a...)
 }
 
 func Close() {

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/name5566/leaf/chanrpc"
-	"github.com/name5566/leaf/log"
+	"github.com/slclub/leaf/chanrpc"
+	"github.com/slclub/leaf/log"
 	"reflect"
 )
 
@@ -152,7 +152,7 @@ func (p *Processor) Unmarshal(data []byte) (interface{}, error) {
 		}
 	}
 
-	panic("bug")
+	panic(any("bug"))
 }
 
 // goroutine safe

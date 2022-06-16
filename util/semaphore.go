@@ -13,3 +13,7 @@ func (s Semaphore) Acquire() {
 func (s Semaphore) Release() {
 	<-s
 }
+
+func Panic(an interface{}) {
+	panic(any(an))
+}

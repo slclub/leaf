@@ -3,8 +3,9 @@ package chanrpc
 import (
 	"errors"
 	"fmt"
-	"github.com/name5566/leaf/conf"
-	"github.com/name5566/leaf/log"
+	"github.com/slclub/leaf/conf"
+	"github.com/slclub/leaf/log"
+	"github.com/slclub/leaf/util"
 	"runtime"
 )
 
@@ -70,11 +71,11 @@ func (s *Server) Register(id interface{}, f interface{}) {
 	case func([]interface{}) interface{}:
 	case func([]interface{}) []interface{}:
 	default:
-		panic(fmt.Sprintf("function id %v: definition of function is invalid", id))
+		util.Panic(fmt.Sprintf("function id %v: definition of function is invalid", id))
 	}
 
 	if _, ok := s.functions[id]; ok {
-		panic(fmt.Sprintf("function id %v: already registered", id))
+		util.Panic(fmt.Sprintf("function id %v: already registered", id))
 	}
 
 	s.functions[id] = f
@@ -86,8 +87,8 @@ func (s *Server) ret(ci *CallInfo, ri *RetInfo) (err error) {
 	}
 
 	defer func() {
-		if r := recover(); r != nil {
-			err = r.(error)
+		if r := recover(); r != util.NIL {
+			err, _ = interface{}(r).(error)
 		}
 	}()
 
@@ -98,7 +99,7 @@ func (s *Server) ret(ci *CallInfo, ri *RetInfo) (err error) {
 
 func (s *Server) exec(ci *CallInfo) (err error) {
 	defer func() {
-		if r := recover(); r != nil {
+		if r := recover(); r != util.NIL {
 			if conf.LenStackBuf > 0 {
 				buf := make([]byte, conf.LenStackBuf)
 				l := runtime.Stack(buf, false)
@@ -124,7 +125,8 @@ func (s *Server) exec(ci *CallInfo) (err error) {
 		return s.ret(ci, &RetInfo{ret: ret})
 	}
 
-	panic("bug")
+	util.Panic("bug")
+	return nil
 }
 
 func (s *Server) Exec(ci *CallInfo) {
@@ -196,8 +198,8 @@ func (c *Client) Attach(s *Server) {
 
 func (c *Client) call(ci *CallInfo, block bool) (err error) {
 	defer func() {
-		if r := recover(); r != nil {
-			err = r.(error)
+		if r := recover(); r != util.NIL {
+			err = interface{}(r).(error)
 		}
 	}()
 
@@ -234,7 +236,7 @@ func (c *Client) f(id interface{}, n int) (f interface{}, err error) {
 	case 2:
 		_, ok = f.(func([]interface{}) []interface{})
 	default:
-		panic("bug")
+		util.Panic("bug")
 	}
 
 	if !ok {
@@ -321,7 +323,7 @@ func (c *Client) asynCall(id interface{}, args []interface{}, cb interface{}, n 
 
 func (c *Client) AsynCall(id interface{}, _args ...interface{}) {
 	if len(_args) < 1 {
-		panic("callback function not found")
+		util.Panic("callback function not found")
 	}
 
 	args := _args[:len(_args)-1]
@@ -336,7 +338,7 @@ func (c *Client) AsynCall(id interface{}, _args ...interface{}) {
 	case func([]interface{}, error):
 		n = 2
 	default:
-		panic("definition of callback function is invalid")
+		util.Panic("definition of callback function is invalid")
 	}
 
 	// too many calls
@@ -351,7 +353,7 @@ func (c *Client) AsynCall(id interface{}, _args ...interface{}) {
 
 func execCb(ri *RetInfo) {
 	defer func() {
-		if r := recover(); r != nil {
+		if r := recover(); r != util.NIL {
 			if conf.LenStackBuf > 0 {
 				buf := make([]byte, conf.LenStackBuf)
 				l := runtime.Stack(buf, false)
@@ -371,7 +373,7 @@ func execCb(ri *RetInfo) {
 	case func([]interface{}, error):
 		ri.cb.(func([]interface{}, error))(assert(ri.ret), ri.err)
 	default:
-		panic("bug")
+		util.Panic("bug")
 	}
 	return
 }
