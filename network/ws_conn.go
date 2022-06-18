@@ -68,8 +68,8 @@ func (wsConn *WSConn) Close() {
 	if wsConn.closeFlag {
 		return
 	}
-
 	wsConn.doWrite(nil)
+	wsConn.Destroy()
 	wsConn.closeFlag = true
 }
 
