@@ -113,6 +113,7 @@ func (a *agent) Run() {
 }
 
 func (a *agent) OnClose() {
+	defer a.Close()
 	if a.gate.AgentChanRPC != nil {
 		err := a.gate.AgentChanRPC.Call0("CloseAgent", a)
 		if err != nil {
@@ -144,6 +145,7 @@ func (a *agent) RemoteAddr() net.Addr {
 }
 
 func (a *agent) Close() {
+	a.Destroy()
 	a.conn.Close()
 }
 

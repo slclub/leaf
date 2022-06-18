@@ -67,7 +67,6 @@ func (tcpConn *TCPConn) Close() {
 		return
 	}
 	tcpConn.doWrite(nil)
-	tcpConn.Destroy()
 	tcpConn.closeFlag = true
 }
 
