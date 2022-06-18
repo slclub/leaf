@@ -40,7 +40,7 @@ func (gate *Gate) Run(closeSig chan bool) {
 		wsServer.CertFile = gate.CertFile
 		wsServer.KeyFile = gate.KeyFile
 		wsServer.NewAgent = func(conn *network.WSConn) network.Agent {
-			a := &agent{conn: conn, gate: gate}
+			a := &agent{conn: conn, gate: gate, closeChan: make(chan struct{})}
 			if gate.AgentChanRPC != nil {
 				gate.AgentChanRPC.Go("NewAgent", a)
 			}
@@ -58,7 +58,7 @@ func (gate *Gate) Run(closeSig chan bool) {
 		tcpServer.MaxMsgLen = gate.MaxMsgLen
 		tcpServer.LittleEndian = gate.LittleEndian
 		tcpServer.NewAgent = func(conn *network.TCPConn) network.Agent {
-			a := &agent{conn: conn, gate: gate}
+			a := &agent{conn: conn, gate: gate, closeChan: make(chan struct{})}
 			if gate.AgentChanRPC != nil {
 				gate.AgentChanRPC.Go("NewAgent", a)
 			}
@@ -84,31 +84,38 @@ func (gate *Gate) Run(closeSig chan bool) {
 func (gate *Gate) OnDestroy() {}
 
 type agent struct {
-	conn     network.Conn
-	gate     *Gate
-	userData interface{}
+	conn      network.Conn
+	gate      *Gate
+	userData  interface{}
+	closeChan chan struct{}
 }
 
 func (a *agent) Run() {
 	for {
-		data, err := a.conn.ReadMsg()
-		if err != nil {
-			log.Debug("read message: %v", err)
-			break
+		select {
+		case <-a.closeChan:
+			return
+		default:
+			data, err := a.conn.ReadMsg()
+			if err != nil {
+				log.Debug("read message: %v", err)
+				break
+			}
+
+			if a.gate.Processor != nil {
+				msg, err := a.gate.Processor.Unmarshal(data)
+				if err != nil {
+					log.Debug("unmarshal message error: %v", err)
+					break
+				}
+				err = a.gate.Processor.Route(msg, a)
+				if err != nil {
+					log.Debug("route message error: %v", err)
+					break
+				}
+			}
 		}
 
-		if a.gate.Processor != nil {
-			msg, err := a.gate.Processor.Unmarshal(data)
-			if err != nil {
-				log.Debug("unmarshal message error: %v", err)
-				break
-			}
-			err = a.gate.Processor.Route(msg, a)
-			if err != nil {
-				log.Debug("route message error: %v", err)
-				break
-			}
-		}
 	}
 }
 
@@ -147,6 +154,7 @@ func (a *agent) RemoteAddr() net.Addr {
 func (a *agent) Close() {
 	a.Destroy()
 	a.conn.Close()
+	a.closeChan <- struct{}{}
 }
 
 func (a *agent) Destroy() {
