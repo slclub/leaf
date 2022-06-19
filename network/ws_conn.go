@@ -106,6 +106,9 @@ func (wsConn *WSConn) RemoteAddr() net.Addr {
 
 // goroutine not safe
 func (wsConn *WSConn) ReadMsg() ([]byte, error) {
+	if wsConn.closeFlag {
+		return nil, errors.New("closed wsconn")
+	}
 	_, b, err := wsConn.conn.ReadMessage()
 	return b, err
 }
