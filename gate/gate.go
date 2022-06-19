@@ -117,7 +117,6 @@ func (a *agent) Run() {
 	}
 
 }
-}
 
 func (a *agent) OnClose() {
 	if a.gate.AgentChanRPC != nil {
