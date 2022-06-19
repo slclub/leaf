@@ -79,11 +79,11 @@ func (wsConn *WSConn) Close() {
 		return
 	}
 	//wsConn.doWrite(nil)
-	close(wsConn.writeChan)
 	close(wsConn.StopChan)
-	wsConn.closeFlag = true
-	wsConn.conn.UnderlyingConn().(*net.TCPConn).SetLinger(0)
+	close(wsConn.writeChan)
 	wsConn.conn.Close()
+	wsConn.closeFlag = true
+	//wsConn.conn.UnderlyingConn().(*net.TCPConn).SetLinger(0)
 }
 
 func (wsConn *WSConn) doWrite(b []byte) {
