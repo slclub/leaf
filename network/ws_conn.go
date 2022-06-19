@@ -27,10 +27,11 @@ func newWSConn(conn *websocket.Conn, pendingWriteNum int, maxMsgLen uint32) *WSC
 	wsConn.StopChan = make(chan struct{})
 
 	go func() {
+		defer wsConn.Close()
 		for {
 			select {
 			case <-wsConn.StopChan:
-				wsConn.Close()
+
 				return
 			case b := <-wsConn.writeChan:
 				if b == nil {
